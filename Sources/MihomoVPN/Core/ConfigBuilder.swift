@@ -27,7 +27,8 @@ enum ConfigBuilder {
         let names = nodes.map(\.tag)
 
         let proxies: [JSON] = nodes.map { node in
-            var p = node.proxy
+            // 纠正订阅里 YAML 残留的字符串 bool/int (如 skip-cert-verify: "true")
+            var p = ClashParser.normalize(node.proxy)
             p["name"] = .string(node.tag)
             return p
         }
