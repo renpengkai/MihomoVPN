@@ -47,7 +47,6 @@ final class VPNController: ObservableObject {
     /// 选中「自动选择」时 urltest 实际使用的节点
     @Published private(set) var autoNow: String?
     @Published private(set) var testing = false
-    @Published private(set) var logURL = Paths.userLog
 
     let store: ProfileStore
     let core: CoreManager
@@ -61,7 +60,6 @@ final class VPNController: ObservableObject {
     init(store: ProfileStore, core: CoreManager) {
         self.store = store
         self.core = core
-        if UserDefaults.standard.bool(forKey: Settings.tun) { logURL = Paths.rootLog }
     }
 
     // MARK: - 连接
@@ -225,7 +223,6 @@ final class VPNController: ObservableObject {
             apiPort: d.integer(forKey: Settings.apiPort),
             secret: UUID().uuidString,
             allowLAN: d.bool(forKey: Settings.allowLAN),
-            logLevel: d.string(forKey: Settings.logLevel) ?? "info",
             testURL: d.string(forKey: Settings.testURL) ?? ConfigBuilder.defaultTestURL)
         let data = try ConfigBuilder.build(nodes: profile.nodes, selected: store.selectedTag, options: options)
         try data.write(to: Paths.config, options: .atomic)
@@ -236,10 +233,10 @@ final class VPNController: ObservableObject {
             Shell.run(corePath, ["-t", "-f", configPath, "-d", workDir])
         }.value
         guard check.status == 0 else {
-            throw AppError("配置校验失败：" + LogReader.lastLines(of: check.output, 4))
+            let detail = check.output.split(separator: "\n").suffix(4).joined(separator: "\n")
+            throw AppError("配置校验失败" + (detail.isEmpty ? "" : "：\(detail)"))
         }
 
-        logURL = tun ? Paths.rootLog : Paths.userLog
         if tun {
             guard await Task.detached(operation: { PrivilegedHelper.isReady }).value else {
                 throw AppError("TUN 模式需要先在「设置」中安装特权组件")
@@ -264,14 +261,12 @@ final class VPNController: ObservableObject {
     }
 
     private func launchProcess() throws {
-        FileManager.default.createFile(atPath: Paths.userLog.path, contents: nil)
-        let log = try FileHandle(forWritingTo: Paths.userLog)
         let p = Process()
         p.executableURL = Paths.core
         p.arguments = ["-f", Paths.config.path, "-d", Paths.support.path]
         p.standardInput = FileHandle.nullDevice
-        p.standardOutput = log
-        p.standardError = log
+        p.standardOutput = FileHandle.nullDevice
+        p.standardError = FileHandle.nullDevice
         p.terminationHandler = { [weak self] proc in
             Task { @MainActor in self?.processExited(proc) }
         }
@@ -286,10 +281,9 @@ final class VPNController: ObservableObject {
         process = nil
         UserDefaults.standard.removeObject(forKey: Settings.corePID)
         guard state == .connected else { return }
-        let reason = LogReader.lastLines(Paths.userLog, 3)
         Task {
             await teardown()
-            state = .failed("内核意外退出" + (reason.isEmpty ? "" : "：\(reason)"))
+            state = .failed("内核意外退出")
         }
     }
 
@@ -300,16 +294,16 @@ final class VPNController: ObservableObject {
         while Date() < deadline {
             if await api.isAlive() { return }
             if !tunActive, process?.isRunning != true {
-                throw AppError("内核启动失败：" + LogReader.lastLines(Paths.userLog, 4))
+                throw AppError("内核启动失败")
             }
             round += 1
             if tunActive, round % 10 == 0 {
                 let status = await Task.detached { PrivilegedHelper.run(["status"]).output }.value
-                if status != "running" { throw AppError("内核启动失败：" + LogReader.lastLines(Paths.rootLog, 4)) }
+                if status != "running" { throw AppError("内核启动失败") }
             }
             try await Task.sleep(nanoseconds: 200_000_000)
         }
-        throw AppError("等待内核启动超时，请查看日志")
+        throw AppError("等待内核启动超时")
     }
 
     private func setSystemProxy(port: Int) async throws {
@@ -378,7 +372,7 @@ final class VPNController: ObservableObject {
                 }
                 guard let self, self.state == .connected else { return }
                 await self.teardown()
-                self.state = .failed("与内核的连接已断开，请查看日志")
+                self.state = .failed("与内核的连接已断开")
                 return
             }
         }

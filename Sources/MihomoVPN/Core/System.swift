@@ -1,7 +1,7 @@
 //
 // System.swift
 // MihomoVPN
-// 路径常量、子进程执行、日志读取、进程路径查询。
+// 路径常量、子进程执行、进程路径查询。
 //
 
 import Foundation
@@ -18,12 +18,10 @@ enum Paths {
     static var core: URL { support.appendingPathComponent("core/mihomo") }
     static var config: URL { support.appendingPathComponent("config.json") }
     static var state: URL { support.appendingPathComponent("profiles.json") }
-    static var userLog: URL { support.appendingPathComponent("core.log") }
 
     /// 以下与 mvpnhelper 内的常量保持一致
     static let helper = "/Library/PrivilegedHelperTools/io.github.renpengkai.mihomovpn.helper"
     static let rootCore = "/Library/PrivilegedHelperTools/io.github.renpengkai.mihomovpn.core"
-    static let rootLog = URL(fileURLWithPath: "/Library/Logs/MihomoVPN/core.log")
 }
 
 enum Shell {
@@ -52,30 +50,6 @@ enum Shell {
         try? handle.close()
         let text = (try? String(contentsOf: out, encoding: .utf8)) ?? ""
         return (p.terminationStatus, text.trimmingCharacters(in: .whitespacesAndNewlines))
-    }
-}
-
-enum LogReader {
-    static func tail(_ url: URL, maxBytes: Int = 64 * 1024) -> String {
-        guard let h = try? FileHandle(forReadingFrom: url) else { return "" }
-        defer { try? h.close() }
-        let size = (try? h.seekToEnd()) ?? 0
-        let start = size > UInt64(maxBytes) ? size - UInt64(maxBytes) : 0
-        try? h.seek(toOffset: start)
-        let data = (try? h.readToEnd()) ?? Data()
-        var text = String(decoding: data, as: UTF8.self)
-        if start > 0, let nl = text.firstIndex(of: "\n") {
-            text = String(text[text.index(after: nl)...])
-        }
-        return text.replacingOccurrences(of: "\u{1B}\\[[0-9;]*m", with: "", options: .regularExpression)
-    }
-
-    static func lastLines(_ url: URL, _ n: Int) -> String {
-        lastLines(of: tail(url, maxBytes: 8192), n)
-    }
-
-    static func lastLines(of text: String, _ n: Int) -> String {
-        text.split(separator: "\n").suffix(n).joined(separator: "\n")
     }
 }
 

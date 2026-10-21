@@ -7,7 +7,7 @@
 import SwiftUI
 
 enum Pane: String, CaseIterable, Identifiable {
-    case dashboard, nodes, profiles, logs, settings
+    case dashboard, nodes, profiles, settings
 
     var id: Self { self }
 
@@ -16,7 +16,6 @@ enum Pane: String, CaseIterable, Identifiable {
         case .dashboard: return "概览"
         case .nodes: return "节点"
         case .profiles: return "订阅"
-        case .logs: return "日志"
         case .settings: return "设置"
         }
     }
@@ -26,7 +25,6 @@ enum Pane: String, CaseIterable, Identifiable {
         case .dashboard: return "gauge.with.dots.needle.33percent"
         case .nodes: return "globe.asia.australia"
         case .profiles: return "tray.full"
-        case .logs: return "text.alignleft"
         case .settings: return "gearshape"
         }
     }
@@ -51,7 +49,6 @@ struct MainView: View {
             case .dashboard: DashboardView(goTo: { pane = $0 })
             case .nodes: NodesView()
             case .profiles: ProfilesView()
-            case .logs: LogsView()
             case .settings: SettingsView()
             }
         }

@@ -13,11 +13,9 @@
 
 import Foundation
 
-let helperVersion = "1"
+let helperVersion = "2"
 let corePath = "/Library/PrivilegedHelperTools/io.github.renpengkai.mihomovpn.core"
 let workDir = "/Library/Application Support/MihomoVPN"
-let logDir = "/Library/Logs/MihomoVPN"
-let logPath = logDir + "/core.log"
 let pidPath = "/var/run/io.github.renpengkai.mihomovpn.pid"
 let safeEnvironment = ["PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "HOME": "/var/root"]
 
@@ -68,23 +66,20 @@ func startCore(configPath: String) -> Never {
 
     let fm = FileManager.default
     try? fm.createDirectory(atPath: workDir, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o755])
-    try? fm.createDirectory(atPath: logDir, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o755])
 
     let rootConfig = workDir + "/config.json"
     guard let data = fm.contents(atPath: configPath) else { fail("无法读取配置文件") }
     guard fm.createFile(atPath: rootConfig, contents: data, attributes: [.posixPermissions: 0o600]) else {
         fail("无法写入 \(rootConfig)")
     }
-    fm.createFile(atPath: logPath, contents: nil, attributes: [.posixPermissions: 0o644])
-    guard let log = FileHandle(forWritingAtPath: logPath) else { fail("无法写入日志 \(logPath)") }
 
     let p = Process()
     p.executableURL = URL(fileURLWithPath: corePath)
     p.arguments = ["-f", rootConfig, "-d", workDir]
     p.environment = safeEnvironment
     p.standardInput = FileHandle.nullDevice
-    p.standardOutput = log
-    p.standardError = log
+    p.standardOutput = FileHandle.nullDevice
+    p.standardError = FileHandle.nullDevice
     do {
         try p.run()
     } catch {
@@ -92,7 +87,7 @@ func startCore(configPath: String) -> Never {
     }
     try? "\(p.processIdentifier)".write(toFile: pidPath, atomically: true, encoding: .utf8)
     usleep(600_000)
-    if !p.isRunning { fail("内核启动后立即退出，请查看日志") }
+    if !p.isRunning { fail("内核启动后立即退出") }
     exit(0)
 }
 

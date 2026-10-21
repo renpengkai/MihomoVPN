@@ -5,7 +5,20 @@
 - **尽量小**：默认不内置内核，界面 + 特权组件约数百 KB；需要时在设置里一键下载官方 Mihomo，或打包时 `BUNDLE_CORE=1` 内置。
 - **订阅**：Clash / Clash.Meta YAML、分享链接、Base64、SIP008、常见 V2ray / sing-box JSON、GitHub 配置文件。
 - **接管**：系统代理（mixed 端口）或 TUN（需安装特权组件）。
-- **界面**：菜单栏弹窗 + 主窗口（概览 / 节点 / 订阅 / 日志 / 设置），macOS 26+ 使用 `glassEffect`。
+- **界面**：菜单栏弹窗 + 主窗口（概览 / 节点 / 订阅 / 设置），macOS 26+ 使用 `glassEffect`。
+
+## 安装
+
+### Homebrew（推荐）
+
+```bash
+brew tap renpengkai/tap
+brew install --cask mihomo-vpn
+```
+
+### 手动下载
+
+从 [Releases](https://github.com/renpengkai/MihomoVPN/releases) 下载 `MihomoVPN-*.zip`，解压后拖入「应用程序」。
 
 ## 构建
 

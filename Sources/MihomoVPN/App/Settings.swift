@@ -13,7 +13,6 @@ enum Settings {
     static let mixedPort = "mixedPort"
     static let apiPort = "apiPort"
     static let allowLAN = "allowLAN"
-    static let logLevel = "logLevel"
     static let testURL = "testURL"
     /// GitHub 订阅与内核下载使用的前缀式加速镜像
     static let githubMirror = "githubMirror"
@@ -32,7 +31,6 @@ enum Settings {
         mixedPort: 7890,
         apiPort: 19090,
         allowLAN: false,
-        logLevel: "info",
         testURL: ConfigBuilder.defaultTestURL,
         githubMirror: "",
         autoConnect: false,

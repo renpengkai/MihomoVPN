@@ -17,7 +17,6 @@ struct SettingsView: View {
     @AppStorage(Settings.mixedPort) private var mixedPort = 7890
     @AppStorage(Settings.apiPort) private var apiPort = 19090
     @AppStorage(Settings.allowLAN) private var allowLAN = false
-    @AppStorage(Settings.logLevel) private var logLevel = "info"
     @AppStorage(Settings.testURL) private var testURL = ConfigBuilder.defaultTestURL
     @AppStorage(Settings.githubMirror) private var githubMirror = ""
     @AppStorage(Settings.autoConnect) private var autoConnect = false
@@ -57,9 +56,6 @@ struct SettingsView: View {
             TextField("本地代理端口 (HTTP + SOCKS5)", value: $mixedPort, format: .number.grouping(.never))
             Toggle("允许局域网设备连接", isOn: $allowLAN)
             TextField("控制接口端口", value: $apiPort, format: .number.grouping(.never))
-            Picker("日志等级", selection: $logLevel) {
-                ForEach(["trace", "debug", "info", "warn", "error"], id: \.self) { Text($0) }
-            }
             TextField("测速地址", text: $testURL)
         }
     }

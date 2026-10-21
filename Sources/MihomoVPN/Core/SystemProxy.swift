@@ -46,7 +46,7 @@ enum SystemProxy {
 
 enum PrivilegedHelper {
     /// 与 mvpnhelper 内的 helperVersion 一致; 改动 helper 行为时同步递增, 旧版本会提示重新安装
-    static let version = "1"
+    static let version = "2"
 
     private static var bundled: String? {
         Bundle.main.executableURL?.deletingLastPathComponent().appendingPathComponent("mvpnhelper").path

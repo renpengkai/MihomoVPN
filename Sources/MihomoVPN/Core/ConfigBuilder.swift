@@ -19,7 +19,6 @@ enum ConfigBuilder {
         var apiPort: Int
         var secret: String
         var allowLAN: Bool
-        var logLevel: String
         var testURL: String
     }
 
@@ -53,7 +52,7 @@ enum ConfigBuilder {
             "allow-lan": .bool(o.allowLAN),
             "bind-address": .string(o.allowLAN ? "*" : "127.0.0.1"),
             "mode": .string(o.mode.rawValue),
-            "log-level": .string(o.logLevel),
+            "log-level": "silent",
             "ipv6": true,
             "unified-delay": true,
             "tcp-concurrent": true,
