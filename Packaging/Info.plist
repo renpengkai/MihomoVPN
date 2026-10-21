@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>zh_CN</string>
+    <key>CFBundleExecutable</key>
+    <string>MihomoVPN</string>
+    <key>CFBundleIdentifier</key>
+    <string>io.github.renpengkai.mihomovpn</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>Mihomo VPN</string>
+    <key>CFBundleDisplayName</key>
+    <string>Mihomo VPN</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleShortVersionString</key>
+    <string>__VERSION__</string>
+    <key>CFBundleVersion</key>
+    <string>__BUILD__</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>13.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>NSAppleEventsUsageDescription</key>
+    <string>安装 TUN / 系统代理特权组件时需要请求管理员授权。</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Proxy core: MetaCubeX/mihomo (GPL-3.0).</string>
+    <key>MVPNCoreVersion</key>
+    <string>__CORE_VERSION__</string>
+</dict>
+</plist>
